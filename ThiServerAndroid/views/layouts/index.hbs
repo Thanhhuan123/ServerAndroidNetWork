@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <button class="col-sm-1" onclick="opendialogAdd()">ADD</button>
+            <form class="col-sm-4" method="GET" id="searchForm">
+                <input type="text" id="nameToFind" placeholder="Tìm kiếm" />
+                <input type="button" onclick="search()" value="Tìm kiếm" />
+            </form>
+            <div class="col-sm-3"><a class="btn btn-primary" href="/">Show All</a></div>
+        </div>
+        <dialog id="dialogAdd" class="w-25">
+            <form action="/api/index" method="POST" enctype="multipart/form-data">
+                <div class="row mt-1"><input type="text" placeholder="Mã SP" name="maSp" required /></div>
+                <div class="row mt-1"><input type="text" placeholder="Tên SP" name="tenSp" required /></div>
+                <div class="row mt-1"><input type="text" placeholder="Giá" name="gia" required /></div>
+                <div class="row mt-1"><input type="file" name="img" accept="image/*" required /></div>
+                <div class="row mt-1 d-flex justify-content-center">
+                    <a class="btn btn-primary col-3 me-1" href="/" value="cancel">Hủy</a>
+                    <button class="btn btn-primary col-6" type="submit">Thêm vào danh sách</button>
+                </div>
+            </form>
+        </dialog>
+        <dialog id="dialogUpdate" class="w-25">
+            <form action="/api/update" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <input type="text" placeholder="id" id="inputID" name="id" />
+                </div>
+                <div class="row mt-1"><input type="text" placeholder="Mã SP" id="maNv" name="maSp" required />
+                </div>
+                <div class="row mt-1"><input type="text" placeholder="Tên SP" id="tenNv" name="tenSp" required />
+                </div>
+                <div class="row mt-1"><input type="text" placeholder="Gia" id="gia" name="gia"
+                        required /></div>
+                <div class="row mt-1"><input type="file" name="img" accept="image/*" required /></div>
+                <div class="row mt-1 d-flex justify-content-center">
+                    <a class="btn btn-primary col-3 me-1" href="/" value="cancel">Hủy</a>
+                    <button class="btn btn-primary col-6" type="submit">Thêm vào danh sách</button>
+                </div>
+            </form>
+        </dialog>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mã SP</th>
+                    <th>Tên SP</th>
+                    <th>Price</th>
+                    <th>Ảnh</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each sanpham }}
+                <tr>
+                    <td>{{this._id}}</td>
+                    <td>{{this.maSp}}</td>
+                    <td>{{this.tenSp}}</td>
+                    <td>{{this.gia}}</td>
+                    <td>
+                        <img style="width: 30px; height: 30px;"
+                            src="data:{{image.contentType}};charset=utf-8;base64,{{image.data}}" alt="">
+                    </td>
+
+                    <td>
+                        <button
+                            onclick="opendialogUpdate(`{{this._id}}`,`{{this.maSp}}`,`{{this.tenSp}}`,`{{this.gia}}`)"
+                            class="btn btn-primary">Update</button>
+                    </td>
+                    <td>
+                        <button onclick="deleteDialog(`{{this._id}}`)" class="btn btn-success">Delete</button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+    </div>
+    <script>
+        const dialogAdd = document.getElementById('dialogAdd');
+        const dialogUpdate = document.getElementById('dialogUpdate');
+        const dialogdelete = document.getElementById('dialogdelete');
+        const idInput = document.getElementById('inputID');
+        const nameToFind = document.getElementById('nameToFind');
+        const searchForm = document.getElementById('searchForm');
+        const maSPInput = document.getElementById('maSp');
+        const tenSPInput = document.getElementById('tenSp');
+        const giaInput = document.getElementById('gia');
+
+        const opendialogAdd = () => {
+            dialogAdd.showModal();
+        }
+        const opendialogUpdate = (id, ma, ten, gia) => {
+            idInput.value = id;
+            maSPInput.value = ma;
+            tenSPInput.value = ten;
+            giaInput.value = gia;
+
+            dialogUpdate.showModal();
+        }
+        const deleteDialog = (id) => {
+
+            var strconfirm = confirm("Are you sure you want to delete?");
+            if (strconfirm == true) {
+                location.href = "http://localhost:3030/api/delete/" + id;
+            }
+
+        }
+        const search = () => {
+            searchForm.action = "/search/" + nameToFind.value;
+            searchForm.submit();
+        }
+    </script>
+</body>
+
+</html>
